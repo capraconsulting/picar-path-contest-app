@@ -7,9 +7,12 @@ import { action } from "@storybook/addon-actions";
 import { linkTo } from "@storybook/addon-links";
 
 import PicarControlView from "../../views/PicarControlView";
+import ControlPad from "../../components/ControlPad";
 
-storiesOf("PicarControlView", module)
-  .add("splash screen", () => <PicarControlView />)
-  .add("sample directions", () =>
-    <PicarControlView initialDirections={["up", "down", "right", "left"]} />
-  );
+storiesOf("ControlPad", module).add("Splash", () =>
+  <ControlPad handlePress={() => {}} />
+);
+
+storiesOf("PicarControlView", module).add("Splash", () =>
+  <PicarControlView handlePress={() => {}} />
+);
