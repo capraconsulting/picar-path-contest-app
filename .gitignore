@@ -1,14 +1,15 @@
-node_modules/
+/node_modules/
 
-# Android build stuff
-android/.gradle/
-android/app/build/
+.idea
 
-flow-typed/
+# Gradle
+/build/
 
-.expo/
-
-.idea/
+# Android
+.gradle
+local.properties
+*.iml
+/android/
 
 npm-debug.*
 yarn-error.log
