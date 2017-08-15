@@ -3,6 +3,8 @@ import React from "react";
 import { Alert, View, Text, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Entypo";
 
+import ControlPad, { type Direction } from "../components/ControlPad";
+
 import {
   compose,
   setStatic,
@@ -17,18 +19,16 @@ import websocketConnect from "rxjs-websockets";
 
 import styled from "styled-components/native";
 
-let PICAR_WEBSOCKET_ADDRESS = `ws://${__DEV__
+const PICAR_WEBSOCKET_ADDRESS = `ws:${__DEV__
   ? "10.0.2.2:9000"
   : "raspberrypi.local:5000"}`;
 
-PICAR_WEBSOCKET_ADDRESS = "ws://echo.websocket.org";
+const PICAR_WEBSOCKET_ADDRESS = "ws://echo.websocket.org";
 
 const ContainerView = styled.View`
   flex: 1;
-  justify-content: flex-end;
+  justify-content: center;
 `;
-
-type Direction = "up" | "down" | "right" | "left";
 
 type ControlViewState = {
   directions: Array<Direction>,
@@ -41,9 +41,6 @@ const Title = styled.Text`
   color: firebrick;
 `;
 
-const Arrow = ({ direction }: { direction: Direction }) =>
-  <Icon name={`arrow-with-circle-${direction}`} color="green" size={60} />;
-
 const ArrowButton = ({
   direction,
   handlePress
@@ -52,29 +49,12 @@ const ArrowButton = ({
   handlePress: Direction => void
 }) =>
   <TouchableOpacity onPress={() => handlePress(direction)}>
-    <Icon name={`arrow-with-circle-${direction}`} size={60} />
-  </TouchableOpacity>;
-
-const PlayButton = ({ handlePress, enabled = false }) =>
-  <TouchableOpacity style={{ alignSelf: "center" }} onPress={handlePress}>
-    <Icon
-      name={`controller-${enabled ? "stop" : "play"}`}
-      size={60}
-      color={`${enabled ? "firebrick" : "forestgreen"}`}
-    />
+    <Icon name={`arrow-with-circle-${direction}`} size={200} />
   </TouchableOpacity>;
 
 const ButtonGrid = styled.View`
   flex-direction: row;
   justify-content: space-around;
-  align-content: flex-end;
-`;
-
-const DirectionList = styled.View`
-  flex: 1;
-  flex-direction: column;
-  justify-content: flex-start;
-  flex-wrap: wrap;
 `;
 
 const enhance = compose(
@@ -82,12 +62,7 @@ const enhance = compose(
     title: "Controls"
   }),
   provideState({
-    initialState: ({
-      initialDirections = []
-    }: {
-      initialDirections: Array<Direction>
-    }) => ({
-      directions: initialDirections,
+    initialState: () => ({
       picarEnabled: false
     }),
     effects: {
@@ -132,19 +107,7 @@ const PicarControlView = ({
   }
 }) =>
   <ContainerView>
-    <Title>Tap the buttons to compose your "path"</Title>
-    <DirectionList>
-      {directions.map((direction, index) =>
-        <Arrow direction={direction} key={`${direction}-${index}`} />
-      )}
-    </DirectionList>
-    <ButtonGrid>
-      <ArrowButton direction="up" handlePress={submitDirection} />
-      <ArrowButton direction="down" handlePress={submitDirection} />
-      <ArrowButton direction="right" handlePress={submitDirection} />
-      <ArrowButton direction="left" handlePress={submitDirection} />
-    </ButtonGrid>
-    <PlayButton handlePress={effects.picarEnabled} enabled={picarEnabled} />
+    <ControlPad handlePress={submitDirection} />
   </ContainerView>;
 
 export default enhance(PicarControlView);
