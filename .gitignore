@@ -1,0 +1,14 @@
+node_modules/
+
+# Android build stuff
+android/.gradle/
+android/app/build/
+
+flow-typed/
+
+.expo/
+
+.idea/
+
+npm-debug.*
+yarn-error.log

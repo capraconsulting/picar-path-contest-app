@@ -1,0 +1,36 @@
+{
+  "name": "picar-path-contest-app",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "@storybook/react-native": "^3.2.3",
+    "babel-preset-react-native-stage-0": "^1.0.1",
+    "flow-bin": "^0.47.0",
+    "jest-expo": "~19.0.0",
+    "react-dom": "16.0.0-alpha.12",
+    "react-test-renderer": "16.0.0-alpha.12",
+    "styled-components": "^2.1.1"
+  },
+  "scripts": {
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "test": "node node_modules/jest/bin/jest.js --watch",
+    "flow": "flow",
+    "storybook": "storybook start -p 7007"
+  },
+  "jest": {
+    "preset": "jest-expo"
+  },
+  "dependencies": {
+    "freactal": "^1.1.1",
+    "queueing-subject": "^0.1.1",
+    "react": "16.0.0-alpha.12",
+    "react-native": "^0.46.1",
+    "react-native-vector-icons": "^4.3.0",
+    "react-navigation": "^1.0.0-beta.11",
+    "recompose": "^0.24.0",
+    "rxjs": "^5.4.3",
+    "rxjs-websockets": "^1.1.0"
+  }
+}
