@@ -4,6 +4,7 @@ import { Alert, View, Text, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Entypo";
 
 import ControlPad, { type Direction } from "../components/ControlPad";
+import Timer from "../components/Timer";
 
 import {
   compose,
@@ -20,10 +21,10 @@ import websocketConnect from "rxjs-websockets";
 import styled from "styled-components/native";
 
 const PICAR_WEBSOCKET_ADDRESS = `ws:${__DEV__
-  ? "10.0.2.2:9000"
+  ? "10.0.2.2:5000/picar_action?token=secret"
   : "raspberrypi.local:5000"}`;
 
-const PICAR_WEBSOCKET_ADDRESS = "ws://echo.websocket.org";
+/* const PICAR_WEBSOCKET_ADDRESS = "ws://echo.websocket.org";*/
 
 const ContainerView = styled.View`
   flex: 1;
@@ -32,7 +33,8 @@ const ContainerView = styled.View`
 
 type ControlViewState = {
   directions: Array<Direction>,
-  picarEnabled: boolean
+  picarEnabled: boolean,
+  time: number
 };
 
 // Presentational components
@@ -41,55 +43,54 @@ const Title = styled.Text`
   color: firebrick;
 `;
 
-const ArrowButton = ({
-  direction,
-  handlePress
-}: {
-  direction: Direction,
-  handlePress: Direction => void
-}) =>
-  <TouchableOpacity onPress={() => handlePress(direction)}>
-    <Icon name={`arrow-with-circle-${direction}`} size={200} />
-  </TouchableOpacity>;
-
-const ButtonGrid = styled.View`
-  flex-direction: row;
-  justify-content: space-around;
-`;
-
 const enhance = compose(
   setStatic("navigationOptions", {
     title: "Controls"
   }),
   provideState({
     initialState: () => ({
-      picarEnabled: false
+      picarEnabled: false,
+      time: 0
     }),
     effects: {
-      picarEnabled: update(state => ({ picarEnabled: true }))
+      picarEnabled: update(state => ({ picarEnabled: true })),
+      incrementTime: update(({ time }) => ({ time: time + 1 }))
     }
   }),
   injectState,
   lifecycle({
     componentDidMount() {
+      // Setup Websocket subscription and upsream subject
       const inputSubject = new QueueingSubject();
       const { messages, connectionStatus } = websocketConnect(
         PICAR_WEBSOCKET_ADDRESS,
         inputSubject
       );
       const messageSubscription = messages.subscribe(message => {
-        Alert.alert(JSON.stringify(message));
+        if (message.error) {
+          return console.error(message.error);
+        }
+        /* this.state.stopTimer();*/
       });
 
-      this.setState({ messageSubscription, inputSubject });
+      // Setup timer
+      const timer = setInterval(this.props.effects.incrementTime, 100);
+
+      this.setState({
+        messageSubscription,
+        inputSubject,
+        stopTimer: () => clearInterval(timer)
+      });
     },
     componentWillUnmount() {
+      this.state.stopTimer();
+
       this.state.messageSubscription.unsubscribe();
     }
   }),
   withHandlers({
     submitDirection: props => (direction: Direction) =>
-      props.inputSubject.next({ direction })
+      props.inputSubject.next({ action: direction })
   })
 );
 
@@ -97,7 +98,7 @@ const PicarControlView = ({
   dispatch,
   submitDirection,
   effects,
-  state: { directions, picarEnabled }
+  state: { directions, picarEnabled, time }
 }: {
   dispatch: () => void,
   submitDirection: Direction => void,
@@ -107,6 +108,7 @@ const PicarControlView = ({
   }
 }) =>
   <ContainerView>
+    <Timer time={time} />
     <ControlPad handlePress={submitDirection} />
   </ContainerView>;
 

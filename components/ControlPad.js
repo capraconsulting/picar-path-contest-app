@@ -6,7 +6,18 @@ import styled from "styled-components/native";
 
 import Icon from "react-native-vector-icons/Entypo";
 
-export type Direction = "up" | "down" | "right" | "left";
+export type Direction = "FORWARD" | "BACKWARD" | "RIGHT" | "LEFT";
+
+function getIconNameFromDirection(direction: Direction) {
+  const name = {
+    FORWARD: "up",
+    BACKWARD: "down",
+    RIGHT: "right",
+    LEFT: "left"
+  }[direction];
+
+  return `arrow-with-circle-${name}`;
+}
 
 export const ArrowButton = ({
   direction,
@@ -16,7 +27,7 @@ export const ArrowButton = ({
   handlePress: Direction => void
 }) =>
   <TouchableOpacity onPress={() => handlePress(direction)}>
-    <Icon name={`arrow-with-circle-${direction}`} size={200} />
+    <Icon name={getIconNameFromDirection(direction)} size={200} />
   </TouchableOpacity>;
 
 const RightLeftContainer = styled.View`
@@ -35,14 +46,14 @@ const Centered = styled.View`align-self: center;`;
 const ControlPad = ({ handlePress }: { handlePress: Direction => void }) =>
   <ContainerView>
     <Centered>
-      <ArrowButton direction="up" handlePress={handlePress} />
+      <ArrowButton direction="FORWARD" handlePress={handlePress} />
     </Centered>
     <RightLeftContainer>
-      <ArrowButton direction="left" handlePress={handlePress} />
-      <ArrowButton direction="right" handlePress={handlePress} />
+      <ArrowButton direction="LEFT" handlePress={handlePress} />
+      <ArrowButton direction="RIGHT" handlePress={handlePress} />
     </RightLeftContainer>
     <Centered>
-      <ArrowButton direction="down" handlePress={handlePress} />
+      <ArrowButton direction="BACKWARD" handlePress={handlePress} />
     </Centered>
   </ContainerView>;
 export default ControlPad;

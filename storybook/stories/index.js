@@ -8,11 +8,12 @@ import { linkTo } from "@storybook/addon-links";
 
 import PicarControlView from "../../views/PicarControlView";
 import ControlPad from "../../components/ControlPad";
+import Timer from "../../components/Timer";
 
 storiesOf("ControlPad", module).add("Splash", () =>
   <ControlPad handlePress={() => {}} />
 );
 
-storiesOf("PicarControlView", module).add("Splash", () =>
-  <PicarControlView handlePress={() => {}} />
-);
+storiesOf("Timer", module).add("Basic", () => <Timer time={0} />);
+
+storiesOf("PicarControlView", module).add("Splash", () => <PicarControlView />);
