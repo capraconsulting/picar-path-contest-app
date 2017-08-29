@@ -13,3 +13,6 @@ local.properties
 
 npm-debug.*
 yarn-error.log
+
+# ignore config.js, which contains application secrets atm
+/config.js

@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { View, Text, TouchableNativeFeedback } from "react-native";
+import { View, Text, TouchableNativeFeedback, Keyboard } from "react-native";
 
 import { compose, withHandlers, setStatic } from "recompose";
 
@@ -9,7 +9,7 @@ import styled from "styled-components/native";
 const StyledInput = styled.TextInput`
   width: 400px;
   height: 50px;
-  font-size: 32px;
+  font-size: 24px;
 `;
 
 const ContainerView = styled.View`
@@ -35,23 +35,26 @@ const enhancer = compose(
     title: "Signup"
   }),
   withHandlers({
-    navigateToControl: ({ navigation: { navigate } }) => () =>
-      navigate("Controls")
+    navigateToControlScreen: ({ navigation: { navigate } }) => () => {
+      Keyboard.dismiss();
+      navigate("Controls");
+    }
   })
 );
 
-const SignupView = ({ navigateToControl }) =>
+const SignupView = ({ navigateToControlScreen }) => (
   <ContainerView>
     <StyledInput
       placeholder="Username"
-      onSubmitEditing={navigateToControl}
+      onSubmitEditing={navigateToControlScreen}
       placeholderTkkk
     />
-    <TouchableNativeFeedback onPress={navigateToControl}>
+    <TouchableNativeFeedback onPress={navigateToControlScreen}>
       <SubmitButtonView>
         <MarginText>Start</MarginText>
       </SubmitButtonView>
     </TouchableNativeFeedback>
-  </ContainerView>;
+  </ContainerView>
+);
 
 export default enhancer(SignupView);

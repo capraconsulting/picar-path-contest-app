@@ -20,11 +20,9 @@ import websocketConnect from "rxjs-websockets";
 
 import styled from "styled-components/native";
 
-const PICAR_WEBSOCKET_ADDRESS = `ws:${__DEV__
-  ? "10.0.2.2:5000/picar_action?token=secret"
-  : "raspberrypi.local:5000"}`;
+const token = "verysecrettoken";
 
-/* const PICAR_WEBSOCKET_ADDRESS = "ws://echo.websocket.org";*/
+const PICAR_WEBSOCKET_ADDRESS = `ws://192.168.1.176:5000/picar_action?token=${token}`;
 
 const ContainerView = styled.View`
   flex: 1;
