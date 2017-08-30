@@ -30,7 +30,7 @@ const MarginText = styled.Text`
   font-size: 32px;
 `;
 
-const enhancer = compose(
+const enhance = compose(
   setStatic("navigationOptions", {
     title: "Signup"
   }),
@@ -57,4 +57,4 @@ const SignupView = ({ navigateToControlScreen }) => (
   </ContainerView>
 );
 
-export default enhancer(SignupView);
+export default enhance(SignupView);

@@ -57,7 +57,7 @@ const enhance = compose(
   }),
   injectState,
   lifecycle({
-    componentDidMount() {
+    componentWillMount() {
       // Setup Websocket subscription and upsream subject
       const inputSubject = new QueueingSubject();
       const { messages, connectionStatus } = websocketConnect(
@@ -104,10 +104,11 @@ const PicarControlView = ({
   effects: {
     picarEnabled: () => void
   }
-}) =>
+}) => (
   <ContainerView>
     <Timer time={time} />
     <ControlPad handlePress={submitDirection} />
-  </ContainerView>;
+  </ContainerView>
+);
 
 export default enhance(PicarControlView);
