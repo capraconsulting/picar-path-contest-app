@@ -16,3 +16,6 @@ yarn-error.log
 
 # ignore config.js, which contains application secrets atm
 /config.js
+
+# Graphqool project files
+/project.graphcool
