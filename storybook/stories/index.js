@@ -36,10 +36,140 @@ storiesOf("HighScoreList", module).add("Sample entries", () => {
     {
       score: 60,
       username: "pacman"
+    },
+    {
+      score: 20,
+      username: "sonic"
+    },
+
+    {
+      score: 30,
+      username: "mario"
+    },
+    {
+      score: 60,
+      username: "pacman"
+    },
+    {
+      score: 20,
+      username: "sonic"
+    },
+
+    {
+      score: 30,
+      username: "mario"
+    },
+    {
+      score: 60,
+      username: "pacman"
+    },
+    {
+      score: 20,
+      username: "sonic"
+    },
+
+    {
+      score: 30,
+      username: "mario"
+    },
+    {
+      score: 60,
+      username: "pacman"
+    },
+    {
+      score: 20,
+      username: "sonic"
+    },
+
+    {
+      score: 30,
+      username: "mario"
+    },
+    {
+      score: 60,
+      username: "pacman"
+    },
+    {
+      score: 20,
+      username: "sonic"
+    },
+
+    {
+      score: 30,
+      username: "mario"
+    },
+    {
+      score: 60,
+      username: "pacman"
+    },
+    {
+      score: 20,
+      username: "sonic"
+    },
+
+    {
+      score: 30,
+      username: "mario"
+    },
+    {
+      score: 60,
+      username: "pacman"
+    },
+    {
+      score: 20,
+      username: "sonic"
+    },
+
+    {
+      score: 30,
+      username: "mario"
+    },
+    {
+      score: 60,
+      username: "pacman"
+    },
+    {
+      score: 20,
+      username: "sonic"
+    },
+
+    {
+      score: 30,
+      username: "mario"
+    },
+    {
+      score: 60,
+      username: "pacman"
+    },
+    {
+      score: 20,
+      username: "sonic"
+    },
+
+    {
+      score: 30,
+      username: "mario"
+    },
+    {
+      score: 60,
+      username: "pacman"
+    },
+    {
+      score: 20,
+      username: "sonic"
+    },
+
+    {
+      score: 30,
+      username: "mario"
+    },
+    {
+      score: 60,
+      username: "pacman"
     }
   ];
 
-  return <HighScoreList highScores={data} />;
+  return <HighScoreList highScores={data} currentUser="pacman" />;
 });
 
 storiesOf("RootView", module).add("Full app", () => <RootView />);

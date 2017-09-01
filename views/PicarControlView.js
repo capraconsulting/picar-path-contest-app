@@ -1,5 +1,8 @@
 // @flow
 import React from "react";
+
+import { gql, graphql } from "react-apollo";
+
 import { Alert, View, Text, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Entypo";
 
@@ -22,7 +25,8 @@ import styled from "styled-components/native";
 
 const token = "verysecrettoken";
 
-const PICAR_WEBSOCKET_ADDRESS = `ws://192.168.1.176:5000/picar_action?token=${token}`;
+/* const PICAR_WEBSOCKET_ADDRESS = `ws://192.168.1.176:5000/picar_action?token=${token}`;*/
+const PICAR_WEBSOCKET_ADDRESS = "wss://echo.websocket.org";
 
 const ContainerView = styled.View`
   flex: 1;
@@ -41,19 +45,27 @@ const Title = styled.Text`
   color: firebrick;
 `;
 
+// Move some of this stuff, getting big this file
+const HighScoreListNewEntryMutation = gql`
+  mutation CreateHighScoreEntry(
+    $score: Int!
+    $username: String!
+    $phoneNo: String!
+  ) {
+    createHighScoreEntry(
+      score: $score
+      username: $username
+      phoneNo: $phoneNo
+    ) {
+      id
+    }
+  }
+`;
+
 const enhance = compose(
+  graphql(HighScoreListNewEntryMutation),
   setStatic("navigationOptions", {
     title: "Controls"
-  }),
-  provideState({
-    initialState: () => ({
-      picarEnabled: false,
-      time: 0
-    }),
-    effects: {
-      picarEnabled: update(state => ({ picarEnabled: true })),
-      incrementTime: update(({ time }) => ({ time: time + 1 }))
-    }
   }),
   injectState,
   lifecycle({
@@ -88,26 +100,42 @@ const enhance = compose(
   }),
   withHandlers({
     submitDirection: props => (direction: Direction) =>
-      props.inputSubject.next({ action: direction })
+      props.inputSubject.next({ action: direction }),
+
+    finishContest: ({
+      navigation: { navigate },
+      mutate,
+      stopTimer,
+      state: { time: score }
+    }) => () => {
+      stopTimer();
+      navigate("Signup");
+    }
   })
 );
+
+const FinishContestButton = styled.Text`
+  color: green;
+  font-size: 24px;
+`;
 
 const PicarControlView = ({
   dispatch,
   submitDirection,
-  effects,
-  state: { directions, picarEnabled, time }
+  finishContest,
+  state: { directions, time }
 }: {
   dispatch: () => void,
   submitDirection: Direction => void,
-  state: ControlViewState,
-  effects: {
-    picarEnabled: () => void
-  }
+  finishContest: () => void,
+  state: ControlViewState
 }) => (
   <ContainerView>
     <Timer time={time} />
     <ControlPad handlePress={submitDirection} />
+    <TouchableOpacity onPress={finishContest}>
+      <FinishContestButton>Finish contest</FinishContestButton>
+    </TouchableOpacity>
   </ContainerView>
 );
 

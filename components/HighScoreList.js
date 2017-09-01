@@ -32,6 +32,7 @@ const HighScoreListFlexContainer = styled.View`
   flex: 1;
   flex-direction: row;
   justify-content: center;
+  background-color: ${({ current }) => (current ? "yellow" : "transparent")};
 `;
 
 const HighScoreTitle = styled.Text`
@@ -44,13 +45,15 @@ const HighScoreTitle = styled.Text`
 const HighScoreEntry = ({
   score,
   username,
-  rank
+  rank,
+  currentUser
 }: {
   score: number,
   username: string,
-  rank: number
+  rank: number,
+  currentUser: ?string
 }) => (
-  <HighScoreListFlexContainer>
+  <HighScoreListFlexContainer current={currentUser === username}>
     <Lefted>
       <Text>{rank}</Text>
     </Lefted>
@@ -64,29 +67,37 @@ const HighScoreEntry = ({
 );
 
 const ContainerView = styled.View`
-  height: 100%;
   background-color: lightblue;
   flex: 1;
 `;
 
 const HighScoreList = ({
-  highScores
+  highScores,
+  currentUser
 }: {
-  highScores: Array<HighScoreEntryShape>
+  highScores: Array<HighScoreEntryShape>,
+  currentUser: string
 }) => (
   <ContainerView>
-    <HighScoreTitle>Highscores</HighScoreTitle>
     <FlatList
       data={highScores}
-      keyExtractor={(item, index) => item.username + index}
-      initialNumToRender={20}
+      ListHeaderComponent={<HighScoreTitle>Highscores</HighScoreTitle>}
+      keyExtractor={(item, index) => "" + index}
+      getItemLayout={(data, index) => ({
+        length: 32,
+        offset: 32,
+        index
+      })}
+      initialScrollIndex={10}
       renderItem={({
         item,
         index
       }: {
         item: HighScoreEntryShape,
         index: number
-      }) => <HighScoreEntry {...item} rank={index + 1} />}
+      }) => (
+        <HighScoreEntry {...item} rank={index + 1} currentUser={currentUser} />
+      )}
     />
   </ContainerView>
 );
