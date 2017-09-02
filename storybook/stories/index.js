@@ -3,6 +3,9 @@
 
 import React from "react";
 
+import faker from "faker";
+import R from "ramda";
+
 import { storiesOf } from "@storybook/react-native";
 import { action } from "@storybook/addon-actions";
 import { linkTo } from "@storybook/addon-links";
@@ -22,154 +25,31 @@ storiesOf("Timer", module).add("Basic", () => <Timer time={0} />);
 
 storiesOf("PicarControlView", module).add("Splash", () => <PicarControlView />);
 
-storiesOf("HighScoreList", module).add("Sample entries", () => {
-  const data = [
-    {
-      score: 20,
-      username: "sonic"
-    },
+const generateMockHighScoreEntries = n =>
+  R.map(
+    n => ({
+      score: (n + 1) * 10,
+      username: faker.internet.userName()
+    }),
+    R.range(0, n)
+  );
 
-    {
-      score: 30,
-      username: "mario"
-    },
-    {
-      score: 60,
-      username: "pacman"
-    },
-    {
-      score: 20,
-      username: "sonic"
-    },
+storiesOf("HighScoreList", module).add("Part of top five", () => {
+  const data = generateMockHighScoreEntries(5);
 
-    {
-      score: 30,
-      username: "mario"
-    },
-    {
-      score: 60,
-      username: "pacman"
-    },
-    {
-      score: 20,
-      username: "sonic"
-    },
+  return <HighScoreList highScores={data} currentUser={data[2]} />;
+});
 
-    {
-      score: 30,
-      username: "mario"
-    },
-    {
-      score: 60,
-      username: "pacman"
-    },
-    {
-      score: 20,
-      username: "sonic"
-    },
+storiesOf("HighScoreList", module).add('Sixth place ("corner case")', () => {
+  const data = generateMockHighScoreEntries(6);
 
-    {
-      score: 30,
-      username: "mario"
-    },
-    {
-      score: 60,
-      username: "pacman"
-    },
-    {
-      score: 20,
-      username: "sonic"
-    },
+  return <HighScoreList highScores={data} currentUser={data[5]} />;
+});
 
-    {
-      score: 30,
-      username: "mario"
-    },
-    {
-      score: 60,
-      username: "pacman"
-    },
-    {
-      score: 20,
-      username: "sonic"
-    },
+storiesOf("HighScoreList", module).add("Outside top six", () => {
+  const data = generateMockHighScoreEntries(20);
 
-    {
-      score: 30,
-      username: "mario"
-    },
-    {
-      score: 60,
-      username: "pacman"
-    },
-    {
-      score: 20,
-      username: "sonic"
-    },
-
-    {
-      score: 30,
-      username: "mario"
-    },
-    {
-      score: 60,
-      username: "pacman"
-    },
-    {
-      score: 20,
-      username: "sonic"
-    },
-
-    {
-      score: 30,
-      username: "mario"
-    },
-    {
-      score: 60,
-      username: "pacman"
-    },
-    {
-      score: 20,
-      username: "sonic"
-    },
-
-    {
-      score: 30,
-      username: "mario"
-    },
-    {
-      score: 60,
-      username: "pacman"
-    },
-    {
-      score: 20,
-      username: "sonic"
-    },
-
-    {
-      score: 30,
-      username: "mario"
-    },
-    {
-      score: 60,
-      username: "pacman"
-    },
-    {
-      score: 20,
-      username: "sonic"
-    },
-
-    {
-      score: 30,
-      username: "mario"
-    },
-    {
-      score: 60,
-      username: "pacman"
-    }
-  ];
-
-  return <HighScoreList highScores={data} currentUser="pacman" />;
+  return <HighScoreList highScores={data} currentUser={data[12]} />;
 });
 
 storiesOf("RootView", module).add("Full app", () => <RootView />);

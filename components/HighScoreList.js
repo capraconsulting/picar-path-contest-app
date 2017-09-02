@@ -4,6 +4,9 @@ import React from "react";
 import { FlatList, View, Text } from "react-native";
 import styled from "styled-components/native";
 
+import R from "ramda";
+import { pure, compose, setStatic, mapProps } from "recompose";
+
 const BigText = styled.Text`font-size: 40px;`;
 
 type HighScoreEntryShape = {
@@ -14,19 +17,39 @@ type HighScoreEntryShape = {
 const Righted = styled.Text`
   font-size: 32px;
   text-align: right;
+  padding-left: 20px;
 `;
 
 const Centered = styled.Text`
   font-size: 32px;
   text-align: right;
-  width: 200px;
-  padding-right: 20px;
+  width: 400px;
 `;
 
 const Lefted = styled.Text`
   font-size: 32px;
   text-align: right;
+  padding-left: 20px;
 `;
+
+const SeparatorContainer = styled.View`
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+const SeparatorDot = styled.Text`
+  font-size: 32px;
+  text-align: center;
+`;
+
+const HighScoreSeparator = () => (
+  <SeparatorContainer>
+    <SeparatorDot>•</SeparatorDot>
+    <SeparatorDot>•</SeparatorDot>
+    <SeparatorDot>•</SeparatorDot>
+  </SeparatorContainer>
+);
 
 const HighScoreListFlexContainer = styled.View`
   flex: 1;
@@ -39,21 +62,18 @@ const HighScoreTitle = styled.Text`
   font-size: 40px;
   color: firebrick;
   align-self: center;
-  line-height: 70px;
 `;
 
 const HighScoreEntry = ({
   score,
   username,
-  rank,
-  currentUser
+  rank
 }: {
   score: number,
   username: string,
-  rank: number,
-  currentUser: ?string
+  rank: number
 }) => (
-  <HighScoreListFlexContainer current={currentUser === username}>
+  <HighScoreListFlexContainer>
     <Lefted>
       <Text>{rank}</Text>
     </Lefted>
@@ -71,35 +91,56 @@ const ContainerView = styled.View`
   flex: 1;
 `;
 
+// Helper functions
+const sliceOfFive = R.slice(0, 5);
+
+const enhance = compose(
+  mapProps(({ highScores, currentUser: { username, score } }) => ({
+    totalEntries: highScores.length,
+    topHighScoreEntries: sliceOfFive(highScores),
+    currentUser: {
+      index: R.findIndex(R.propEq("username", username), highScores),
+      username,
+      score
+    }
+  })),
+  pure
+);
+
 const HighScoreList = ({
-  highScores,
+  totalEntries,
+  topHighScoreEntries,
   currentUser
 }: {
-  highScores: Array<HighScoreEntryShape>,
-  currentUser: string
+  totalEntries: number,
+  topHighScoreEntries: Array<HighScoreEntryShape>,
+  currentUser: {
+    score: number,
+    username: string,
+    index: number
+  }
 }) => (
   <ContainerView>
     <FlatList
-      data={highScores}
       ListHeaderComponent={<HighScoreTitle>Highscores</HighScoreTitle>}
-      keyExtractor={(item, index) => "" + index}
-      getItemLayout={(data, index) => ({
-        length: 32,
-        offset: 32,
-        index
-      })}
-      initialScrollIndex={10}
-      renderItem={({
-        item,
-        index
-      }: {
-        item: HighScoreEntryShape,
-        index: number
-      }) => (
-        <HighScoreEntry {...item} rank={index + 1} currentUser={currentUser} />
+      data={topHighScoreEntries}
+      ListFooterComponent={() =>
+        currentUser.index >= 5 && (
+          <View>
+            {currentUser.index > 5 && <HighScoreSeparator />}
+            <HighScoreEntry {...currentUser} rank={currentUser.index + 1} />
+          </View>
+        )}
+      keyExtractor={({ username }) => username}
+      renderItem={({ item: highScore, index }) => (
+        <HighScoreEntry
+          {...highScore}
+          rank={index + 1}
+          key={highScore.username}
+        />
       )}
     />
   </ContainerView>
 );
 
-export default HighScoreList;
+export default enhance(HighScoreList);

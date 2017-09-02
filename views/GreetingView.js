@@ -3,7 +3,7 @@ import React from "react";
 
 import { TouchableNativeFeedback } from "react-native";
 
-import { compose, withHandlers, setStatic } from "recompose";
+import { compose, withHandlers, setStatic, pure } from "recompose";
 
 import styled from "styled-components/native";
 
@@ -39,7 +39,8 @@ const enhance = compose(
     handlePress: ({ navigation: { navigate } }) => () => {
       navigate("Controls");
     }
-  })
+  }),
+  pure
 );
 
 const GreetingView = ({ handlePress }) => (
