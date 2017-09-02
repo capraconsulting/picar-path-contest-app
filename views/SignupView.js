@@ -115,6 +115,7 @@ class SignupView extends React.Component {
           placeholder="Username"
           onChangeText={setUsername}
           value={username}
+          maxLength={25}
           blurOnSubmit={false}
           onSubmitEditing={this._handleUsernameSubmit}
         />
@@ -122,6 +123,7 @@ class SignupView extends React.Component {
           innerRef={input => {
             this.phoneNoInput = input;
           }}
+          maxLength={14}
           value={phoneNo}
           placeholder="Phone number"
           onChangeText={setPhoneNo}
