@@ -12,7 +12,6 @@ import styled from "styled-components/native";
 const StyledInput = styled.TextInput`
   width: 400px;
   height: 50px;
-  font-size: 24px;
   padding-bottom: 20px;
 `;
 
@@ -81,8 +80,8 @@ const enhance = compose(
             phoneNo
           }
         });
+        setErrorMessage(null);
       } catch (err) {
-        console.error(err);
         setErrorMessage(
           "The username or phone number has already been registered! \n Enter a different username and/or phone number"
         );
