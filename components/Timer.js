@@ -3,6 +3,7 @@ import React from "react";
 import { Text } from "react-native";
 
 import styled from "styled-components/native";
+import { formatResultTime } from "../utils";
 
 type TimerProps = {
   time: number,
@@ -14,9 +15,8 @@ const BigBoldText = styled.Text`
   font-weight: bold;
 `;
 
-const Timer = ({ time, unit = 10 }: TimerProps) =>
-  <BigBoldText>
-    {`${Math.floor(time / unit)}.${time % unit}`}
-  </BigBoldText>;
+const Timer = ({ time, unit = 10 }: TimerProps) => {
+  return <BigBoldText>{formatResultTime(time, unit)}</BigBoldText>;
+};
 
 export default Timer;

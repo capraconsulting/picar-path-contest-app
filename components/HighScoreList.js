@@ -7,6 +7,8 @@ import styled from "styled-components/native";
 import R from "ramda";
 import { pure, compose, setStatic, mapProps } from "recompose";
 
+import { formatResultTime } from "../utils";
+
 const BigText = styled.Text`font-size: 40px;`;
 
 type HighScoreEntryShape = {
@@ -81,7 +83,7 @@ const HighScoreEntry = ({
       <Text>{username}</Text>
     </Centered>
     <Righted>
-      <Text>{score}</Text>
+      <Text>{formatResultTime(score)}</Text>
     </Righted>
   </HighScoreListFlexContainer>
 );
@@ -95,15 +97,19 @@ const ContainerView = styled.View`
 const sliceOfFive = R.slice(0, 5);
 
 const enhance = compose(
-  mapProps(({ highScores, currentUser: { username, score } }) => ({
-    totalEntries: highScores.length,
-    topHighScoreEntries: sliceOfFive(highScores),
-    currentUser: {
-      index: R.findIndex(R.propEq("username", username), highScores),
-      username,
-      score
-    }
-  })),
+  mapProps(props => {
+    const { highScores, currentUser: { username, score } } = props;
+    console.log(props);
+    return {
+      totalEntries: highScores.length,
+      topHighScoreEntries: sliceOfFive(highScores),
+      currentUser: {
+        index: R.findIndex(R.propEq("username", username), highScores),
+        username,
+        score
+      }
+    };
+  }),
   pure
 );
 

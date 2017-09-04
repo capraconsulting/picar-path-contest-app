@@ -3,18 +3,16 @@ import React from "react";
 
 import { gql, graphql } from "react-apollo";
 
-import { Alert, View, Text, TouchableOpacity } from "react-native";
+import { Alert, View, Text, TouchableNativeFeedback } from "react-native";
 import Icon from "react-native-vector-icons/Entypo";
-
-import ControlPad, { type Direction } from "../components/ControlPad";
-import Timer from "../components/Timer";
 
 import {
   compose,
   setStatic,
   withReducer,
   withHandlers,
-  lifecycle
+  lifecycle,
+  pure
 } from "recompose";
 import { provideState, injectState, update } from "freactal";
 
@@ -23,14 +21,17 @@ import websocketConnect from "rxjs-websockets";
 
 import styled from "styled-components/native";
 
-const token = "verysecrettoken";
+import { PICAR_WEBSOCKET_ADDRESS } from "../config";
 
-/* const PICAR_WEBSOCKET_ADDRESS = `ws://192.168.1.176:5000/picar_action?token=${token}`;*/
-const PICAR_WEBSOCKET_ADDRESS = "wss://echo.websocket.org";
+import ControlPad, { type Direction } from "../components/ControlPad";
+import Timer from "../components/Timer";
+
+const token = "verysecrettoken";
 
 const ContainerView = styled.View`
   flex: 1;
   justify-content: center;
+  align-items: center;
 `;
 
 type ControlViewState = {
@@ -41,8 +42,25 @@ type ControlViewState = {
 
 // Presentational components
 const Title = styled.Text`
-  font-size: 48px;
+  text-align: center;
+  font-size: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   color: firebrick;
+`;
+
+const FinishButtonView = styled.View`
+  background-color: darkseagreen;
+  border-radius: 5px;
+  margin-bottom: 40px;
+`;
+
+const MarginText = styled.Text`
+  margin: 10px;
+  text-align: center;
+  font-size: 24px;
 `;
 
 // Move some of this stuff, getting big this file
@@ -131,11 +149,17 @@ const PicarControlView = ({
   state: ControlViewState
 }) => (
   <ContainerView>
-    <Timer time={time} />
+    <Title>
+      Use the arrow buttons to control the car and bring it safely through the
+      course!
+    </Title>
     <ControlPad handlePress={submitDirection} />
-    <TouchableOpacity onPress={finishContest}>
-      <FinishContestButton>Finish contest</FinishContestButton>
-    </TouchableOpacity>
+    <Timer time={time} />
+    <TouchableNativeFeedback onPress={finishContest}>
+      <FinishButtonView>
+        <MarginText>Finish contest</MarginText>
+      </FinishButtonView>
+    </TouchableNativeFeedback>
   </ContainerView>
 );
 

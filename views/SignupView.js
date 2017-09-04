@@ -9,6 +9,8 @@ import { compose, withHandlers, setStatic } from "recompose";
 
 import styled from "styled-components/native";
 
+import { formatResultTime } from "../utils";
+
 const StyledInput = styled.TextInput`
   width: 400px;
   height: 50px;
@@ -16,7 +18,7 @@ const StyledInput = styled.TextInput`
 `;
 
 const ContainerView = styled.View`
-  display: flex;
+  flex: 1;
   justify-content: center;
   align-items: center;
   flex-grow: 1;
@@ -30,12 +32,26 @@ const SubmitButtonView = styled.View`
 const MarginText = styled.Text`
   margin: 10px;
   text-align: center;
-  font-size: 32px;
+  font-size: 24px;
 `;
 
 const ErrorText = styled.Text`
   color: firebrick;
   font-size: 24px;
+`;
+
+const Title = styled.Text`
+  font-size: 30px;
+  padding-bottom: 20px;
+  width: 600px;
+`;
+
+const Header = View;
+
+const ResultTime = styled.Text`
+  color: goldenrod;
+  font-size: 30px;
+  text-align: center;
 `;
 
 const HighScoreListNewEntryMutation = gql`
@@ -80,7 +96,7 @@ const enhance = compose(
             phoneNo
           }
         });
-        setErrorMessage(null);
+        setErrorMessage("");
       } catch (err) {
         setErrorMessage(
           "The username or phone number has already been registered! \n Enter a different username and/or phone number"
@@ -105,11 +121,18 @@ class SignupView extends React.Component {
   render() {
     const {
       handleSubmit,
-      state: { errorMessage, username, phoneNo },
+      state: { errorMessage, username, phoneNo, time },
       effects: { setUsername, setPhoneNo }
     } = this.props;
     return (
       <ContainerView>
+        <Header>
+          <Text>Congratulations, you completed the course! Your time was</Text>
+          <ResultTime>{formatResultTime(time)}</ResultTime>
+          <Text>
+            Enter a username and phone number to win your own Picar kit!
+          </Text>
+        </Header>
         <StyledInput
           placeholder="Username"
           onChangeText={setUsername}
@@ -134,7 +157,7 @@ class SignupView extends React.Component {
         {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
         <TouchableNativeFeedback onPress={handleSubmit}>
           <SubmitButtonView>
-            <MarginText>Start</MarginText>
+            <MarginText>Submit</MarginText>
           </SubmitButtonView>
         </TouchableNativeFeedback>
       </ContainerView>

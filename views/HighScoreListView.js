@@ -1,4 +1,5 @@
 import React from "react";
+import Spinner from "react-native-loading-spinner-overlay";
 import { gql, graphql } from "react-apollo";
 
 import { pure, compose, setStatic, mapProps } from "recompose";
@@ -23,22 +24,27 @@ const HighScoreListQuery = gql`
 
 const enhance = compose(
   setStatic("navigationOptions", {
-    title: "Higsh scores"
+    title: "High scores"
   }),
   injectState,
   graphql(HighScoreListQuery, {
-    options: ({ state: { score: currentScore } }) => ({
-      variables: { currentScore }
+    options: ({ state: { time } }) => ({
+      variables: { currentScore: time }
     })
-  }),
-  pure
+  })
 );
 
 const HighScoreListView = ({
-  data: { allHighScoreEntries },
+  data: { loading, allHighScoreEntries },
   state: currentUser
-}) => (
-  <HighScoreList highScores={allHighScoreEntries} currentUser={currentUser} />
-);
+}) => {
+  if (loading) {
+    return <Spinner />;
+  }
+
+  return (
+    <HighScoreList highScores={allHighScoreEntries} currentUser={currentUser} />
+  );
+};
 
 export default enhance(HighScoreListView);

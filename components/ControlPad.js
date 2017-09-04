@@ -28,7 +28,7 @@ export const ArrowButton = ({
   handlePress: Direction => void
 }) => (
   <TouchableOpacity onPress={() => handlePress(direction)}>
-    <Icon name={getIconNameFromDirection(direction)} size={200} />
+    <Icon name={getIconNameFromDirection(direction)} size={100} />
   </TouchableOpacity>
 );
 
@@ -36,19 +36,23 @@ const RightLeftContainer = styled.View`
   flex: 1;
   flex-direction: row;
   justify-content: space-around;
+  width: 600px;
 `;
 
 const ContainerView = styled.View`
   flex: 1;
-  justify-content: flex-end;
+  justify-content: space-around;
 `;
 
-const Centered = styled.View`align-self: center;`;
+const Centered = styled.View`
+  flex: 1;
+  align-items: center;
+`;
 
 const BigGreenText = styled.Text`
-  font-size: 40px;
+  font-size: 24px;
   color: green;
-  line-height: 40px;
+  line-height: 26px;
 `;
 
 const ThrottleButton = ({ handlePress }) => (
@@ -64,7 +68,7 @@ const ControlPad = ({ handlePress }: { handlePress: Direction => void }) => (
     </Centered>
     <RightLeftContainer>
       <ArrowButton direction="LEFT" handlePress={handlePress} />
-      <ThrottleButton handlePress={handlePress} />
+      {/* <ThrottleButton handlePress={handlePress} /> */}
       <ArrowButton direction="RIGHT" handlePress={handlePress} />
     </RightLeftContainer>
     <Centered>

@@ -21,14 +21,18 @@ storiesOf("ControlPad", module).add("Splash", () => (
   <ControlPad handlePress={() => {}} />
 ));
 
-storiesOf("Timer", module).add("Basic", () => <Timer time={0} />);
+storiesOf("Timer", module)
+  .add("0 seconds", () => <Timer time={0} />)
+  .add("10.5", () => <Timer time={10.5 * 10} />)
+  .add("1.5 minutes", () => <Timer time={90 * 10} />)
+  .add("3 minutes", () => <Timer time={180 * 10} />);
 
 storiesOf("PicarControlView", module).add("Normal", () => <PicarControlView />);
 
 const generateMockHighScoreEntries = n =>
   R.map(
-    n => ({
-      score: (n + 1) * 10,
+    i => ({
+      score: (i + 1) * 10,
       username: faker.internet.userName()
     }),
     R.range(0, n)
