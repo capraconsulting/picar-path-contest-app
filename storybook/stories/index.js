@@ -23,7 +23,7 @@ storiesOf("ControlPad", module).add("Splash", () => (
 
 storiesOf("Timer", module).add("Basic", () => <Timer time={0} />);
 
-storiesOf("PicarControlView", module).add("Splash", () => <PicarControlView />);
+storiesOf("PicarControlView", module).add("Normal", () => <PicarControlView />);
 
 const generateMockHighScoreEntries = n =>
   R.map(
