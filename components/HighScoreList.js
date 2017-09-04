@@ -97,19 +97,15 @@ const ContainerView = styled.View`
 const sliceOfFive = R.slice(0, 5);
 
 const enhance = compose(
-  mapProps(props => {
-    const { highScores, currentUser: { username, score } } = props;
-    console.log(props);
-    return {
-      totalEntries: highScores.length,
-      topHighScoreEntries: sliceOfFive(highScores),
-      currentUser: {
-        index: R.findIndex(R.propEq("username", username), highScores),
-        username,
-        score
-      }
-    };
-  }),
+  mapProps(({ highScores, currentUser: { username, score } }) => ({
+    totalEntries: highScores.length,
+    topHighScoreEntries: sliceOfFive(highScores),
+    currentUser: {
+      index: R.findIndex(R.propEq("username", username), highScores),
+      username,
+      score
+    }
+  })),
   pure
 );
 
@@ -132,7 +128,7 @@ const HighScoreList = ({
       data={topHighScoreEntries}
       ListFooterComponent={() =>
         currentUser.index >= 5 && (
-          <View>
+          <View style={{ flex: 1 }}>
             {currentUser.index > 5 && <HighScoreSeparator />}
             <HighScoreEntry {...currentUser} rank={currentUser.index + 1} />
           </View>

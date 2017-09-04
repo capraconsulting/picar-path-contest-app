@@ -17,6 +17,7 @@ import {
 import { provideState, injectState, update } from "freactal";
 
 import { QueueingSubject } from "queueing-subject";
+import { ReplaySubject } from "rxjs";
 import websocketConnect from "rxjs-websockets";
 
 import styled from "styled-components/native";
@@ -88,8 +89,9 @@ const enhance = compose(
   injectState,
   lifecycle({
     componentWillMount() {
-      // Setup Websocket subscription and upsream subject
-      const inputSubject = new QueueingSubject();
+      // Setup Websocket subscription and upssream subject
+      /* const inputSubject = new QueueingSubject();*/
+      const inputSubject = new ReplaySubject().throttleTime(1000);
       const { messages, connectionStatus } = websocketConnect(
         PICAR_WEBSOCKET_ADDRESS,
         inputSubject

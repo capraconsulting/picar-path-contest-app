@@ -3,6 +3,7 @@ import React from "react";
 import { View, Text, TouchableNativeFeedback, Keyboard } from "react-native";
 
 import { graphql, gql } from "react-apollo";
+import Spinner from "react-native-loading-spinner-overlay";
 
 import { provideState, injectState, update, mergeIntoState } from "freactal";
 import { compose, withHandlers, setStatic } from "recompose";
