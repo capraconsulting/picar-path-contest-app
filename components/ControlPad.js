@@ -36,7 +36,7 @@ const RightLeftContainer = styled.View`
   flex: 1;
   flex-direction: row;
   justify-content: space-around;
-  width: 600px;
+  width: 400px;
 `;
 
 const ContainerView = styled.View`

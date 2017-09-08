@@ -14,11 +14,19 @@ import RootView from "../../views/RootView";
 import PicarControlView from "../../views/PicarControlView";
 
 import ControlPad from "../../components/ControlPad";
+import PicarConnectionIndicator from "../../components/PicarConnectionIndicator";
 import HighScoreList from "../../components/HighScoreList";
 import Timer from "../../components/Timer";
 
 storiesOf("ControlPad", module).add("Splash", () => (
   <ControlPad handlePress={() => {}} />
+));
+
+storiesOf("PicarConnectionIndicator", module).add("Disabled", () => (
+  <PicarConnectionIndicator picarEnabled={false} />
+));
+storiesOf("PicarConnectionIndicator", module).add("Enabled", () => (
+  <PicarConnectionIndicator picarEnabled={true} />
 ));
 
 storiesOf("Timer", module)

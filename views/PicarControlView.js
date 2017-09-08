@@ -25,6 +25,7 @@ import styled from "styled-components/native";
 import { PICAR_WEBSOCKET_ADDRESS } from "../config";
 
 import ControlPad, { type Direction } from "../components/ControlPad";
+import PicarConnectionIndicator from "../components/PicarConnectionIndicator";
 import Timer from "../components/Timer";
 
 const token = "verysecrettoken";
@@ -86,52 +87,17 @@ const enhance = compose(
   setStatic("navigationOptions", {
     title: "Controls"
   }),
-  injectState,
-  lifecycle({
-    componentWillMount() {
-      // Setup Websocket subscription and upssream subject
-      /* const inputSubject = new QueueingSubject();*/
-      const inputSubject = new ReplaySubject().throttleTime(1000);
-      const { messages, connectionStatus } = websocketConnect(
-        PICAR_WEBSOCKET_ADDRESS,
-        inputSubject
-      );
-      const messageSubscription = messages.subscribe(message => {
-        if (message.error) {
-          return console.error(message.error);
-        }
-        /* this.state.stopTimer();*/
-      });
-
-      // Setup timer
-      const timer = setInterval(this.props.effects.incrementTime, 100);
-
-      this.setState({
-        messageSubscription,
-        inputSubject,
-        stopTimer: () => clearInterval(timer)
-      });
-    },
-    componentWillUnmount() {
-      this.state.stopTimer();
-
-      this.state.messageSubscription.unsubscribe();
+  provideState({
+    initialState: () => ({
+      picarEnabled: false
+    }),
+    effects: {
+      setPicarEnabled: update((state, picarEnabled: boolean) => ({
+        picarEnabled
+      }))
     }
   }),
-  withHandlers({
-    submitDirection: props => (direction: Direction) =>
-      props.inputSubject.next({ action: direction }),
-
-    finishContest: ({
-      navigation: { navigate },
-      mutate,
-      stopTimer,
-      state: { time: score }
-    }) => () => {
-      stopTimer();
-      navigate("Signup");
-    }
-  })
+  injectState
 );
 
 const FinishContestButton = styled.Text`
@@ -139,30 +105,101 @@ const FinishContestButton = styled.Text`
   font-size: 24px;
 `;
 
-const PicarControlView = ({
-  dispatch,
-  submitDirection,
-  finishContest,
-  state: { directions, time }
-}: {
-  dispatch: () => void,
-  submitDirection: Direction => void,
-  finishContest: () => void,
-  state: ControlViewState
-}) => (
-  <ContainerView>
-    <Title>
-      Use the arrow buttons to control the car and bring it safely through the
-      course!
-    </Title>
-    <ControlPad handlePress={submitDirection} />
-    <Timer time={time} />
-    <TouchableNativeFeedback onPress={finishContest}>
-      <FinishButtonView>
-        <MarginText>Finish contest</MarginText>
-      </FinishButtonView>
-    </TouchableNativeFeedback>
-  </ContainerView>
-);
+type ControlViewProps = {
+  state: ControlViewState,
+  effects: {
+    incrementTime: () => void,
+    setPicarEnabled: boolean => void
+  },
+  navigation: {
+    navigate: string => void
+  }
+};
+
+class PicarControlView extends React.Component<void, ControlViewProps, void> {
+  stopTimer: ?() => void;
+  inputSubject: any;
+  messageSubscription: any;
+
+  connectToWebsocket = () => {
+    const inputSubject = new ReplaySubject().throttleTime(1000);
+    const { messages, connectionStatus } = websocketConnect(
+      PICAR_WEBSOCKET_ADDRESS,
+      inputSubject
+    );
+    const messageSubscription = messages.subscribe(message => {
+      if (message.error) {
+        if (this.stopTimer != null) {
+          this.stopTimer();
+        }
+        return console.error(message.error);
+      }
+    });
+
+    // Setup timer
+    const timer = setInterval(this.props.effects.incrementTime, 100);
+
+    this.stopTimer = () => {
+      clearInterval(timer);
+    };
+
+    this.messageSubscription = messageSubscription;
+    this.inputSubject = inputSubject;
+  };
+
+  _tryReconnect = () => {
+    try {
+      this.connectToWebsocket();
+      this.props.effects.setPicarEnabled(true);
+    } catch (e) {}
+  };
+
+  submitDirection = (direction: Direction) =>
+    this.inputSubject.next({ action: direction });
+
+  finishContest = () => {
+    if (this.stopTimer != null) {
+      this.stopTimer();
+    }
+    this.props.navigation.navigate("Signup");
+  };
+
+  componentDidMount() {
+    try {
+      this.connectToWebsocket();
+      this.props.effects.setPicarEnabled(true);
+    } catch (e) {}
+  }
+
+  componentWillUnmount() {
+    this.props.effects.setPicarEnabled(false);
+    if (this.stopTimer != null) {
+      this.stopTimer();
+      this.messageSubscription.unsubscribe();
+    }
+  }
+  render() {
+    const { state: { directions, time, picarEnabled } } = this.props;
+    return (
+      <ContainerView>
+        <Title>
+          Use the arrow buttons to control the car and bring it safely through
+          the course!
+        </Title>
+        <ControlPad handlePress={this.submitDirection} />
+        <Timer time={time} />
+        <TouchableNativeFeedback onPress={this.finishContest}>
+          <FinishButtonView>
+            <MarginText>Finish contest</MarginText>
+          </FinishButtonView>
+        </TouchableNativeFeedback>
+        <PicarConnectionIndicator
+          picarEnabled={picarEnabled}
+          tryReconnect={this._tryReconnect}
+        />
+      </ContainerView>
+    );
+  }
+}
 
 export default enhance(PicarControlView);
