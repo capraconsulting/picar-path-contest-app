@@ -12,6 +12,18 @@ import styled from "styled-components/native";
 
 import { formatResultTime } from "../utils";
 
+const SkipButtonView = styled.View`
+  margin-top: 20px;
+  background-color: darksalmon;
+  border-radius: 5px;
+`;
+
+const MarginText = styled.Text`
+  margin: 10px;
+  text-align: center;
+  font-size: 32px;
+`;
+
 const StyledInput = styled.TextInput`
   width: 400px;
   height: 50px;
@@ -26,14 +38,9 @@ const ContainerView = styled.View`
 `;
 
 const SubmitButtonView = styled.View`
-  background-color: darkseagreen;
+  background-color: ${({ disabled = false }) =>
+    disabled ? "darkgrey" : "darkseagreen"};
   border-radius: 5px;
-`;
-
-const MarginText = styled.Text`
-  margin: 10px;
-  text-align: center;
-  font-size: 24px;
 `;
 
 const ErrorText = styled.Text`
@@ -83,6 +90,9 @@ const enhance = compose(
   }),
   injectState,
   withHandlers({
+    handleSkipPress: ({ navigation: { navigate } }) => () => {
+      navigate("HighScoreList", { fetchAll: true });
+    },
     handleSubmit: ({
       navigation: { navigate },
       state: { username, phoneNo, time: score },
@@ -99,8 +109,8 @@ const enhance = compose(
         });
         setErrorMessage("");
       } catch (err) {
-        setErrorMessage(
-          "The username or phone number has already been registered! \n Enter a different username and/or phone number"
+        await setErrorMessage(
+          "The username has already been registered! \n Enter a different username and/or phone number"
         );
         return;
       }
@@ -122,6 +132,7 @@ class SignupView extends React.Component {
   render() {
     const {
       handleSubmit,
+      handleSkipPress,
       state: { errorMessage, username, phoneNo, time },
       effects: { setUsername, setPhoneNo }
     } = this.props;
@@ -156,10 +167,18 @@ class SignupView extends React.Component {
         />
 
         {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
-        <TouchableNativeFeedback onPress={handleSubmit}>
-          <SubmitButtonView>
+        <TouchableNativeFeedback
+          disabled={!(phoneNo && username)}
+          onPress={handleSubmit}
+        >
+          <SubmitButtonView disabled={!(phoneNo && username)}>
             <MarginText>Submit</MarginText>
           </SubmitButtonView>
+        </TouchableNativeFeedback>
+        <TouchableNativeFeedback onPress={handleSkipPress}>
+          <SkipButtonView>
+            <MarginText>Skip</MarginText>
+          </SkipButtonView>
         </TouchableNativeFeedback>
       </ContainerView>
     );

@@ -112,7 +112,8 @@ const enhance = compose(
 const HighScoreList = ({
   totalEntries,
   topHighScoreEntries,
-  currentUser
+  currentUser,
+  showCurrentUser = true
 }: {
   totalEntries: number,
   topHighScoreEntries: Array<HighScoreEntryShape>,
@@ -120,13 +121,15 @@ const HighScoreList = ({
     score: number,
     username: string,
     index: number
-  }
+  },
+  showCurrentUser: boolean
 }) => (
   <ContainerView>
     <FlatList
       ListHeaderComponent={<HighScoreTitle>Highscores</HighScoreTitle>}
       data={topHighScoreEntries}
       ListFooterComponent={() =>
+        showCurrentUser &&
         currentUser.index >= 5 && (
           <View style={{ flex: 1 }}>
             {currentUser.index > 5 && <HighScoreSeparator />}

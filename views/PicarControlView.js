@@ -6,29 +6,16 @@ import { gql, graphql } from "react-apollo";
 import { Alert, View, Text, TouchableNativeFeedback } from "react-native";
 import Icon from "react-native-vector-icons/Entypo";
 
-import {
-  compose,
-  setStatic,
-  withReducer,
-  withHandlers,
-  lifecycle,
-  pure
-} from "recompose";
+import { compose, setStatic, withReducer, lifecycle, pure } from "recompose";
 import { provideState, injectState, update } from "freactal";
-
-import { QueueingSubject } from "queueing-subject";
-import { ReplaySubject } from "rxjs";
-import websocketConnect from "rxjs-websockets";
 
 import styled from "styled-components/native";
 
-import { PICAR_WEBSOCKET_ADDRESS } from "../config";
+import { PICAR_WEBSOCKET_ADDRESS, PICAR_PING_ENDPOINT } from "../config";
 
 import ControlPad, { type Direction } from "../components/ControlPad";
 import PicarConnectionIndicator from "../components/PicarConnectionIndicator";
 import Timer from "../components/Timer";
-
-const token = "verysecrettoken";
 
 const ContainerView = styled.View`
   flex: 1;
@@ -54,7 +41,8 @@ const Title = styled.Text`
 `;
 
 const FinishButtonView = styled.View`
-  background-color: darkseagreen;
+  background-color: ${({ disabled = false }) =>
+    disabled ? "darkgrey" : "darkseagreen"};
   border-radius: 5px;
   margin-bottom: 40px;
 `;
@@ -108,6 +96,7 @@ const FinishContestButton = styled.Text`
 type ControlViewProps = {
   state: ControlViewState,
   effects: {
+    resetTime: () => void,
     incrementTime: () => void,
     setPicarEnabled: boolean => void
   },
@@ -116,66 +105,90 @@ type ControlViewProps = {
   }
 };
 
+const websocketPromise = async (url, onClose = () => {}) => {
+  const ws = new WebSocket(url);
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject("WebSocket connection timed out");
+    }, 2000);
+    ws.addEventListener("open", event => {
+      clearTimeout(timeout);
+      resolve({
+        sendData(data) {
+          ws.send(JSON.stringify(data));
+        },
+        close() {
+          ws.close();
+        }
+      });
+    });
+    ws.addEventListener("close", onClose);
+  });
+};
+
 class PicarControlView extends React.Component<void, ControlViewProps, void> {
   stopTimer: ?() => void;
   inputSubject: any;
   messageSubscription: any;
+  sendData: ?({ action: Direction }) => void;
+  closeWebsocket: ?() => void;
 
-  connectToWebsocket = () => {
-    const inputSubject = new ReplaySubject().throttleTime(1000);
-    const { messages, connectionStatus } = websocketConnect(
-      PICAR_WEBSOCKET_ADDRESS,
-      inputSubject
-    );
-    const messageSubscription = messages.subscribe(message => {
-      if (message.error) {
-        if (this.stopTimer != null) {
+  connectToWebSocket = async () => {
+    try {
+      const {
+        sendData,
+        close
+      } = await websocketPromise(PICAR_WEBSOCKET_ADDRESS, () => {
+        this.props.effects.setPicarEnabled(false);
+        if (this.stopTimer) {
           this.stopTimer();
         }
-        return console.error(message.error);
-      }
-    });
-
-    // Setup timer
-    const timer = setInterval(this.props.effects.incrementTime, 100);
-
-    this.stopTimer = () => {
-      clearInterval(timer);
-    };
-
-    this.messageSubscription = messageSubscription;
-    this.inputSubject = inputSubject;
+      });
+      await this.props.effects.setPicarEnabled(true);
+      this.sendData = sendData;
+      this.closeWebsocket = close;
+      // Setup timer
+      const timer = setInterval(() => {
+        console.log(`TIME: ${this.props.state.time}`);
+        this.props.effects.incrementTime();
+      }, 100);
+      this.stopTimer = () => {
+        clearInterval(timer);
+      };
+    } catch (err) {}
   };
 
-  _tryReconnect = () => {
-    try {
-      this.connectToWebsocket();
-      this.props.effects.setPicarEnabled(true);
-    } catch (e) {}
+  submitDirection = (direction: Direction) => {
+    if (!this.sendData) {
+      return;
+    }
+    this.sendData({ action: direction });
   };
-
-  submitDirection = (direction: Direction) =>
-    this.inputSubject.next({ action: direction });
 
   finishContest = () => {
     if (this.stopTimer != null) {
       this.stopTimer();
+      if (this.closeWebsocket) {
+        this.closeWebsocket();
+      }
     }
     this.props.navigation.navigate("Signup");
   };
 
   componentDidMount() {
-    try {
-      this.connectToWebsocket();
-      this.props.effects.setPicarEnabled(true);
-    } catch (e) {}
+    this.props.effects.resetTime();
+    this.connectToWebSocket();
   }
 
   componentWillUnmount() {
+    this.props.effects.resetTime();
     this.props.effects.setPicarEnabled(false);
+
+    if (this.closeWebsocket != null) {
+      this.closeWebsocket();
+    }
     if (this.stopTimer != null) {
       this.stopTimer();
-      this.messageSubscription.unsubscribe();
     }
   }
   render() {
@@ -186,16 +199,19 @@ class PicarControlView extends React.Component<void, ControlViewProps, void> {
           Use the arrow buttons to control the car and bring it safely through
           the course!
         </Title>
-        <ControlPad handlePress={this.submitDirection} />
+        <ControlPad enabled={picarEnabled} handlePress={this.submitDirection} />
         <Timer time={time} />
-        <TouchableNativeFeedback onPress={this.finishContest}>
-          <FinishButtonView>
+        <TouchableNativeFeedback
+          onPress={this.finishContest}
+          disabled={!picarEnabled}
+        >
+          <FinishButtonView disabled={!picarEnabled}>
             <MarginText>Finish contest</MarginText>
           </FinishButtonView>
         </TouchableNativeFeedback>
         <PicarConnectionIndicator
           picarEnabled={picarEnabled}
-          tryReconnect={this._tryReconnect}
+          tryReconnect={this.connectToWebSocket}
         />
       </ContainerView>
     );

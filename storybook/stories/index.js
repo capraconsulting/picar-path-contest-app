@@ -19,7 +19,7 @@ import HighScoreList from "../../components/HighScoreList";
 import Timer from "../../components/Timer";
 
 storiesOf("ControlPad", module).add("Splash", () => (
-  <ControlPad handlePress={() => {}} />
+  <ControlPad enabled={false} handlePress={() => {}} />
 ));
 
 storiesOf("PicarConnectionIndicator", module).add("Disabled", () => (

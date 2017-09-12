@@ -39,6 +39,12 @@ const provide = provideState({
     phoneNo: ""
   }),
   effects: {
+    resetTime: update(() => ({ time: 0 })),
+    resetState: () => () => ({
+      time: 0,
+      username: "",
+      phoneNo: ""
+    }),
     incrementTime: update(({ time }) => ({ time: time + 1 })),
     setUsername: update((state, username) => ({ username })),
     setPhoneNo: update((state, phoneNo) => ({ phoneNo }))
@@ -61,7 +67,9 @@ const Navigator = provide(
         screen: HighScoreListView
       }
     },
-    { initialRouteName: "Greeting" }
+    {
+      initialRouteName: "Greeting"
+    }
   )
 );
 

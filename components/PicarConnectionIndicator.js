@@ -14,10 +14,10 @@ const ConnectionStatusText = styled.Text`
   margin-bottom: 20px;
 `;
 
-const FlexContainer = styled.View``;
+const FlexContainer = styled.View`width: 1000px;`;
 
 const enhance = withHandlers({
-  tryReconnect: ({ picarEnabled, tryReconnect }) => {
+  handlePress: ({ picarEnabled, tryReconnect }) => {
     if (picarEnabled) {
       return () => {};
     } else {
@@ -42,7 +42,7 @@ const PicarConnectionIndicator = ({
     </TouchableOpacity>
     <ConnectionStatusText>{`The picar is ${picarEnabled
       ? "online"
-      : "offline"}`}</ConnectionStatusText>
+      : "offline. Touch the red circle to try to reconnect"}`}</ConnectionStatusText>
   </FlexContainer>
 );
 

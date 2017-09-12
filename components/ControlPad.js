@@ -2,6 +2,8 @@
 import React from "react";
 import { TouchableOpacity, View, Text } from "react-native";
 
+import { withHandlers } from "recompose";
+
 import styled from "styled-components/native";
 
 import Icon from "react-native-vector-icons/Entypo";
@@ -22,12 +24,14 @@ function getIconNameFromDirection(direction: Direction) {
 
 export const ArrowButton = ({
   direction,
+  disabled,
   handlePress
 }: {
   direction: Direction,
+  disabled: boolean,
   handlePress: Direction => void
 }) => (
-  <TouchableOpacity onPress={() => handlePress(direction)}>
+  <TouchableOpacity disabled={disabled} onPress={() => handlePress(direction)}>
     <Icon name={getIconNameFromDirection(direction)} size={100} />
   </TouchableOpacity>
 );
@@ -55,21 +59,42 @@ const BigGreenText = styled.Text`
   line-height: 26px;
 `;
 
-const ThrottleButton = ({ handlePress }) => (
-  <TouchableOpacity onPress={() => handlePress("DRIVE")}>
-    <BigGreenText>DRIVE!</BigGreenText>
-  </TouchableOpacity>
-);
+const enhance = withHandlers({
+  handlePress: ({ enabled, handlePress: ownerHandlePress }) => (
+    direction: Direction
+  ) => {
+    if (enabled) {
+      ownerHandlePress(direction);
+    }
+  }
+});
 
-const ControlPad = ({ handlePress }: { handlePress: Direction => void }) => (
+const ControlPad = ({
+  handlePress,
+  enabled = false
+}: {
+  handlePress: Direction => void,
+  enabled: boolean
+}) => (
   <ContainerView>
     <Centered>
-      <ArrowButton direction="FORWARD" handlePress={handlePress} />
+      <ArrowButton
+        disabled={!enabled}
+        direction="FORWARD"
+        handlePress={handlePress}
+      />
     </Centered>
     <RightLeftContainer>
-      <ArrowButton direction="LEFT" handlePress={handlePress} />
-      {/* <ThrottleButton handlePress={handlePress} /> */}
-      <ArrowButton direction="RIGHT" handlePress={handlePress} />
+      <ArrowButton
+        disabled={!enabled}
+        direction="LEFT"
+        handlePress={handlePress}
+      />
+      <ArrowButton
+        disabled={!enabled}
+        direction="RIGHT"
+        handlePress={handlePress}
+      />
     </RightLeftContainer>
     <Centered>
       <ArrowButton direction="BACKWARD" handlePress={handlePress} />
@@ -77,4 +102,4 @@ const ControlPad = ({ handlePress }: { handlePress: Direction => void }) => (
   </ContainerView>
 );
 
-export default ControlPad;
+export default enhance(ControlPad);
