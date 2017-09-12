@@ -6,7 +6,7 @@ import { gql, graphql } from "react-apollo";
 import { Alert, View, Text, TouchableNativeFeedback } from "react-native";
 import Icon from "react-native-vector-icons/Entypo";
 
-import { compose, setStatic, withReducer, lifecycle, pure } from "recompose";
+import { compose, setStatic, lifecycle, pure } from "recompose";
 import { provideState, injectState, update } from "freactal";
 
 import styled from "styled-components/native";
@@ -201,10 +201,7 @@ class PicarControlView extends React.Component<void, ControlViewProps, void> {
         </Title>
         <ControlPad enabled={picarEnabled} handlePress={this.submitDirection} />
         <Timer time={time} />
-        <TouchableNativeFeedback
-          onPress={this.finishContest}
-          disabled={!picarEnabled}
-        >
+        <TouchableNativeFeedback onPress={this.finishContest}>
           <FinishButtonView disabled={!picarEnabled}>
             <MarginText>Finish contest</MarginText>
           </FinishButtonView>

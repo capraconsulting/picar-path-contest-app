@@ -10,7 +10,7 @@ import {
   pure,
   compose,
   setStatic,
-  mapProps,
+  withProps,
   withHandlers,
   branch
 } from "recompose";
@@ -71,8 +71,14 @@ const enhance = compose(
     title: "Highscores"
   }),
   injectState,
+  withProps(
+    R.compose(
+      R.objOf("fetchAll"),
+      R.path(["navigation", "state", "params", "fetchAll"])
+    )
+  ),
   branch(
-    ({ navigation: { state: { params: { fetchAll = false } } } }) => fetchAll,
+    ({ fetchAll = false }) => fetchAll,
     graphql(HighScoreListQueryTopFive, {
       options: { fetchPolicy: "network-only" }
     }),
@@ -105,7 +111,7 @@ const renameTimeToScore = obj => ({
 });
 
 const HighScoreListView = ({
-  navigation: { state: { params: { fetchAll = false } } },
+  fetchAll,
   data: { loading, allHighScoreEntries },
   state: currentUser,
   handlePressReset
