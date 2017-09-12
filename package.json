@@ -1,6 +1,6 @@
 {
   "name": "picar-path-contest-app",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "devDependencies": {
     "@storybook/react-native": "^3.2.3",
