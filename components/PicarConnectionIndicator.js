@@ -9,7 +9,7 @@ import styled from "styled-components/native";
 import PowerLight from "./PowerLight";
 
 const ConnectionStatusText = styled.Text`
-  font-size: 18px;
+  font-size: 32px;
   text-align: center;
   margin-bottom: 20px;
 `;

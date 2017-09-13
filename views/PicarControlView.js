@@ -149,7 +149,6 @@ class PicarControlView extends React.Component<void, ControlViewProps, void> {
       this.closeWebsocket = close;
       // Setup timer
       const timer = setInterval(() => {
-        console.log(`TIME: ${this.props.state.time}`);
         this.props.effects.incrementTime();
       }, 100);
       this.stopTimer = () => {
