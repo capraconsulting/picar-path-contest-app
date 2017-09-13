@@ -9,6 +9,9 @@ import Icon from "react-native-vector-icons/Entypo";
 import { compose, setStatic, lifecycle, pure } from "recompose";
 import { provideState, injectState, update } from "freactal";
 
+import { Subject } from "rxjs/Subject";
+import "rxjs/add/operator/throttleTime";
+
 import styled from "styled-components/native";
 
 import { PICAR_WEBSOCKET_ADDRESS, PICAR_PING_ENDPOINT } from "../config";
@@ -113,11 +116,16 @@ const websocketPromise = async (url, onClose = () => {}) => {
     }, 2000);
     ws.addEventListener("open", event => {
       clearTimeout(timeout);
+      const subject = new Subject();
+      subject.throttleTime(1000).subscribe(data => {
+        ws.send(JSON.stringify(data));
+      });
       resolve({
         sendData(data) {
-          ws.send(JSON.stringify(data));
+          subject.next(data);
         },
         close() {
+          subject.unsubscribe();
           ws.close();
         }
       });
@@ -198,7 +206,7 @@ class PicarControlView extends React.Component<void, ControlViewProps, void> {
           Use the arrow buttons to control the car and bring it safely through
           the course!
         </Title>
-        <ControlPad enabled={picarEnabled} handlePress={this.submitDirection} />
+        <ControlPad enabled={true} handlePress={this.submitDirection} />
         <Timer time={time} />
         <TouchableNativeFeedback onPress={this.finishContest}>
           <FinishButtonView disabled={!picarEnabled}>
