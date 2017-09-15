@@ -97,7 +97,11 @@ const ControlPad = ({
       />
     </RightLeftContainer>
     <Centered>
-      <ArrowButton direction="BACKWARD" handlePress={handlePress} />
+      <ArrowButton
+        disabled={!enabled}
+        direction="BACKWARD"
+        handlePress={handlePress}
+      />
     </Centered>
   </ContainerView>
 );

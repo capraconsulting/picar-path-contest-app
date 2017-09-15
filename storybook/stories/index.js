@@ -49,19 +49,37 @@ const generateMockHighScoreEntries = n =>
 storiesOf("HighScoreList", module).add("Part of top five", () => {
   const data = generateMockHighScoreEntries(5);
 
-  return <HighScoreList highScores={data} currentUser={data[2]} />;
+  return (
+    <HighScoreList
+      highScores={data}
+      currentUser={data[2]}
+      showCurrentUser={true}
+    />
+  );
 });
 
 storiesOf("HighScoreList", module).add('Sixth place ("corner case")', () => {
   const data = generateMockHighScoreEntries(6);
 
-  return <HighScoreList highScores={data} currentUser={data[5]} />;
+  return (
+    <HighScoreList
+      highScores={data}
+      currentUser={data[5]}
+      showCurrentUser={true}
+    />
+  );
 });
 
 storiesOf("HighScoreList", module).add("Outside top six", () => {
   const data = generateMockHighScoreEntries(20);
 
-  return <HighScoreList highScores={data} currentUser={data[12]} />;
+  return (
+    <HighScoreList
+      highScores={data}
+      currentUser={data[12]}
+      showCurrentUser={true}
+    />
+  );
 });
 
 storiesOf("RootView", module).add("Full app", () => <RootView />);
